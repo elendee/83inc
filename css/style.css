@@ -1,0 +1,26 @@
+body{
+	background: rgb(50, 50, 50);
+	margin:  0;
+}
+
+.canvas-container{
+	width: 300px;
+	max-width: 300px;
+	border: 2px solid red;
+}
+
+canvas{
+	max-width: 100%;
+	height: auto !important;
+	border:  3px solid grey;
+}
+
+#gui{
+	width: 300px;
+	border: 2px solid green;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	right: 0;
+	overflow-y: auto;
+}
