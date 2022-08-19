@@ -1,18 +1,9 @@
-console.log("init")
+import hal from './util/hal.js?v=1'
+import fetch_wrap from './util/fetch_wrap.js?v=1'
+import { xhr_file } from './util/file_upload.js?v=1'
+import GUI from './GUI.js?v=1'
+import CANVAS from './CANVAS.js?v=1'
 
-// const c1 = document.createElement('canvas')
-// document.body.append( c1 )
 
-const fCanvas = new fabric.Canvas( document.getElementById('canvas'), {
-	width: 1080,
-	height: 1080,
-})
 
-const rect = new fabric.Rect({
-	width: 100,
-	height: 100,
-	fill: 'blue',
-})
 
-fCanvas.add( rect )
-fCanvas.requestRenderAll()
