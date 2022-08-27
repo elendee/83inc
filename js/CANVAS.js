@@ -1,4 +1,4 @@
-import BROKER from './util/EventBroker.js?v=1'
+import BROKER from './util/EventBroker.js?v=2'
 import {
 	handleDragStart,
 	handleDragOver,
@@ -6,7 +6,7 @@ import {
 	handleDragLeave,
 	handleDrop,
 	handleDragEnd,
-} from './util/dragndrop.js?v=1'
+} from './util/dragndrop.js?v=2'
 
 
 
@@ -60,6 +60,9 @@ setTimeout(() => {
 
 
 // drop events
+const gui = document.getElementById('gui')
+gui.addEventListener('dragstart', handleDragStart)
+window.addEventListener('dragend', handleDragEnd )
 fCanvas.upperCanvasEl.addEventListener('dragenter', handleDragEnter)
 fCanvas.upperCanvasEl.addEventListener('dragover', function( event ){ handleDragOver( event ) } )
 fCanvas.upperCanvasEl.addEventListener('dragleave', handleDragLeave )

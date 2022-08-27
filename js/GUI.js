@@ -1,5 +1,5 @@
-import hal from './util/hal.js?v=1'
-import BROKER from './util/EventBroker.js?v=1'
+import hal from './util/hal.js?v=2'
+import BROKER from './util/EventBroker.js?v=2'
 
 
 

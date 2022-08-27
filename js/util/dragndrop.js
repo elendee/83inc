@@ -1,4 +1,4 @@
-import BROKER from './EventBroker.js?v=1'
+import BROKER from './EventBroker.js?v=2'
 // import CANVAS from './CANVAS.js'
 // 
 // import USER from '../USER.js'
@@ -15,10 +15,12 @@ import BROKER from './EventBroker.js?v=1'
 // DRAG AND DROP
 
 function handleDragStart( e ) {
-	 [].forEach.call(images, function (img) {
-			 img.classList.remove('img_dragging')
-	})
-	this.classList.add('img_dragging')
+	// [].forEach.call(images, function (img) {
+	// 	 img.classList.remove('img_dragging')
+	// })
+	const drop = e.target.classList.contains('drop') ? e.target : e.target.parentElement
+	drop.classList.add('img_dragging')
+	console.log( e.target )
 }
 	
 function handleDragOver( e ) {
@@ -176,9 +178,12 @@ function handleDrop( event ) {
 	
 function handleDragEnd(e) {
 		
-	[].forEach.call(images, function (img) {
-		img.classList.remove('img_dragging')
-	})
+	// [].forEach.call(images, function (img) {
+	// 	img.classList.remove('img_dragging')
+	// })
+	for( const drop of document.querySelectorAll('.drop')){
+		drop.classList.remove('img_dragging')
+	}
 			 
 }
 
