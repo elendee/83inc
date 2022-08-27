@@ -1,4 +1,12 @@
 import BROKER from './util/EventBroker.js?v=1'
+import {
+	handleDragStart,
+	handleDragOver,
+	handleDragEnter,
+	handleDragLeave,
+	handleDrop,
+	handleDragEnd,
+} from './util/dragndrop.js?v=1'
 
 
 
@@ -49,6 +57,12 @@ setTimeout(() => {
 }, 500)
 
 
+// drop events
+fCanvas.upperCanvasEl.addEventListener('dragenter', handleDragEnter)
+fCanvas.upperCanvasEl.addEventListener('dragover', function( event ){ handleDragOver( event ) } )
+fCanvas.upperCanvasEl.addEventListener('dragleave', handleDragLeave )
+fCanvas.upperCanvasEl.addEventListener('drop', function(){ handleDrop( event ) } )
+
 
 // dummy data for canvas
 
@@ -87,9 +101,17 @@ const add_object = event => {
 
 }
 
+const render_all = event => {
+	fCanvas.requestRenderAll()
+}
+
+
+
+
 
 
 BROKER.subscribe('CANVAS_ADD_OBJECT', add_object )
+BROKER.publish('CANVAS_RENDER', render_all )
 
 
 
