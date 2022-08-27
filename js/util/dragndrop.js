@@ -1,3 +1,4 @@
+import BROKER from './EventBroker.js?v=1'
 // import CANVAS from './CANVAS.js'
 // 
 // import USER from '../USER.js'
@@ -46,7 +47,6 @@ function handleDrop( event ) {
 	if( event.stopPropagation ) event.stopPropagation()
 
 	// handle desktop images
-	// if(dpk.session.logged_in){
 
 	if( event.dataTransfer.files.length > 0 ){
 
@@ -68,7 +68,9 @@ function handleDrop( event ) {
 
 					let mb = Number( (the_file.size / 1000000 ).toFixed(3) )
 					//blorb
-					if( mb < dpk.config.upload.mb[ USER._level ] ){
+					console.log( 'mb: ', mb )
+
+					if( mb < 10 ){
 
 						if( the_file.type.match(/svg/i) ){
 	
@@ -76,19 +78,28 @@ function handleDrop( event ) {
 	
 						}else{
 										
+							// console.log('the drop image:', the_file )
+
 							var reader = new FileReader()
-
 							console.log('saving image to server...', 2000)
-			
 							reader.readAsDataURL( the_file )
-
 							reader.onloadend = function( evt ) {
 
-								console.log('THE DROP FILE: ', the_file )
-				
+								console.log('Reader result: ', evt )
+
+								const img = evt.target.result
+
+								BROKER.publish('ADD_IMAGE', {
+									img: img,
+									width: img.width,
+									height: img.height,
+									left: 100,
+									top: 100,
+									e: event, // the drop event, not img load event
+								})
+
 								// CANVAS.save_image( evt.target.result, the_file, event )
-		
-							}	 
+							}
 
 						}
 

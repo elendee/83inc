@@ -39,6 +39,8 @@ const remove_resize = e => {
 const fCanvas = window.fCanvas = new fabric.Canvas( document.getElementById('canvas'), {
 	width: 1080,
 	height: 1080,
+	renderOnAddRemove: false, // performance gains; many functions need this though
+	preserveObjectStacking: true
 })
 
 const resizer = document.createElement('div')
@@ -105,14 +107,57 @@ const render_all = event => {
 	fCanvas.requestRenderAll()
 }
 
+const add_image = event => {
+	const {
+		img, // data URL 
+		width,
+		height,
+		left,
+		top,
+		e,
+	} = event
+
+	const image = new Image()
+	image.src = img
+	image.onload = ev => {
+
+		const dropleft = e.layerX
+		const droptop = e.layerY
+
+		const fimg = new fabric.Image( image, {
+			// width: 150,
+			left: dropleft,
+			top: droptop,
+		})
+
+		const LIMIT = 500 // px
+
+		if( image.width > LIMIT ){
+			const ratio = LIMIT / image.width
+			fimg.scaleToWidth( image.width * ratio )
+			fimg.scaleToHeight( image.height * ratio )
+		}
+
+		console.log('adding', fimg )
+
+		fCanvas.add( fimg )
+		fCanvas.requestRenderAll()
+
+	}
+
+	// console.log( e, e.layerY, e.layerX )
+	// document.body.append( image )
+	// event ? event.layerY - img.height/2 : 100,
+
+}
 
 
 
 
 
 BROKER.subscribe('CANVAS_ADD_OBJECT', add_object )
-BROKER.publish('CANVAS_RENDER', render_all )
-
+BROKER.subscribe('CANVAS_RENDER', render_all )
+BROKER.subscribe('ADD_IMAGE', add_image )
 
 
 export default {}
