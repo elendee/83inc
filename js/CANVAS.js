@@ -124,6 +124,15 @@ function specialcopy(){
 		
 }
 
+const print_index = () => {
+	const obj = fCanvas.getActiveObject()
+	if( !obj ) return console.log('no object')
+	const index = fCanvas._objects.indexOf( obj ) + 1
+	const layers = fCanvas._objects.length
+	hal('standard', 'object layer: ' + index + '/' + layers, 2000 )
+}
+
+const debounced_print_index = lib.make_debounce( print_index, 500, false, true )
 
 
 
@@ -398,7 +407,6 @@ const action = event => {
 			}
 			fCanvas.remove( obj )
 			fCanvas.discardActiveObject()
-			fCanvas.requestRenderAll()
 			break;
 
 		case 'fill':
@@ -419,7 +427,7 @@ const action = event => {
 			break;
 
 		case 'snap':
-			console.log( e.target, index )
+			// console.log( e.target, index )
 			if( !obj ) return hal('error', 'no object to snap', 3000 )
 
 			// could split this into several types of snap
@@ -431,18 +439,8 @@ const action = event => {
 
 			const bounds = obj.getBoundingRect()
 
-			// the difference from "obj left" to "bounding box left"
-			// add this to obj position to move by bounding box
-			// const diff = { 
-			// 	left: bounds.left - obj.left,
-			// 	top: bounds.top - obj.top,
-			// }
-
 			const cwidth = fCanvas.getWidth()
 			const cheight = fCanvas.getHeight()
-
-			// console.log( diff )
-			// let left, top
 
 			const mid = {
 				x: lib.middle( cwidth, bounds.width ),
@@ -450,7 +448,6 @@ const action = event => {
 			}
 
 			switch( index ){
-
 				case 0: // tl
 					obj.left -= bounds.left
 					obj.top -= bounds.top
@@ -487,15 +484,25 @@ const action = event => {
 					lib.setBoundingBox( obj, 'left', cwidth - bounds.width )
 					lib.setBoundingBox( obj, 'top', cheight - bounds.height )
 					break;
-
 			}
 
-			fCanvas.requestRenderAll()
 			break;
+
+			case 'up':
+				obj.bringForward()
+				debounced_print_index()
+				break;
+
+			case 'down':
+				obj.sendBackwards()
+				debounced_print_index()
+				break;
 
 		default: 
 			return console.log('unknown gui action', type )
 	}
+
+	fCanvas.requestRenderAll()
 
 }
 

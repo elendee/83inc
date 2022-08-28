@@ -3,9 +3,20 @@ import BROKER from './util/EventBroker.js?v=4'
 
 
 
+
+
+
+
+
 const gui = document.getElementById('gui')
+const toggle = document.getElementById('gui-toggle')
 const nav = document.getElementById('gui-nav')
 const content = document.getElementById('gui-content')
+
+const arrows = {
+	up: '&uarr;',
+	down: '&darr;'
+}
 
 const section_types = [
 	'library',
@@ -15,8 +26,35 @@ const section_types = [
 ]
 
 const library_data = [
-	'chocotaco.png',
 	'df.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
+	'chocotaco.png',
 ]
 
 const SECTIONS = {}
@@ -85,6 +123,12 @@ class ActionBar {
 			},
 			snaps: {
 				allowed: true,
+			},
+			up: {
+				allowed: true,
+			},
+			down: {
+				allowed: true,
 			}
 		}
 
@@ -121,7 +165,8 @@ class ActionBar {
 			}else{ // normal buttons
 
 				// build DOM element / button
-				action.ele.innerText = type
+				action.ele.innerHTML = type
+				if( type == 'up' || type == 'down' ) action.ele.innerHTML = arrows[ type ]
 				action.ele.classList.add('button')
 				// assign action (publish event to CANVAS)
 				action.action = () => {
@@ -157,8 +202,9 @@ const AB = new ActionBar()
 
 
 
+// ------------------------------------------------------------------------------------
 // lib
-
+// ------------------------------------------------------------------------------------
 const add_image = e => {
 	const img = e.target.nodeName.match(/img/i) ? e.target : e.target.parentElement
 	const image = new fabric.Image( img, {
@@ -195,7 +241,13 @@ const build_button = type => {
 
 
 
-// init
+
+
+
+
+// ------------------------------------------------------------------------------------
+// init / bindings
+// ------------------------------------------------------------------------------------
 for( const type of section_types ){
 	const btn = new GUI_Section({
 		type: type,
@@ -206,11 +258,21 @@ for( const type of section_types ){
 
 nav.querySelector('.button').click()
 
+toggle.addEventListener('click', () => {
+	toggle.classList.toggle('toggled')
+	gui.classList.toggle('toggled')
+})
 
 
 
 
-// event subscribers
+
+
+
+
+// ------------------------------------------------------------------------------------
+// event subcribers
+// ------------------------------------------------------------------------------------
 const update_gui = event => {
 	const { canvas } = event
 	const active = canvas.getActiveObject()

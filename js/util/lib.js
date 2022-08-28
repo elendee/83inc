@@ -30,7 +30,7 @@ const make_debounce = ( fn, time, immediate, delay ) => {
         	// console.log('first exec')
         	fn(...args)
         }
-        if( delay )_clearTimeout( buffer )
+        if( delay ) clearTimeout( buffer )
         buffer = setTimeout(() => {
             fn(...args)
             buffer = false
