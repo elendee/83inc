@@ -33,7 +33,8 @@ const style = `
 	position: relative;
 	background: rgba(0, 0, 0, .9);
 	color: lightgrey;
-	font-size: 13px;
+	font-size: 1rem;
+    font-weight: bold;
 	display: inline-block;
 	margin: 1px 0;
 	padding: 3px 40px 3px 20px;

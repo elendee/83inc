@@ -1,5 +1,6 @@
 *{
 	box-sizing: border-box;
+	font-family: monospace;
 }
 
 img{
@@ -75,7 +76,6 @@ canvas{
 	cursor: pointer;
 	user-select: none;
 	text-transform: uppercase;
-	font-family: monospace;
 	box-shadow: 0px 0px 10px black;
 }
 .button:hover{
