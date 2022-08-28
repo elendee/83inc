@@ -1,5 +1,5 @@
-import hal from './util/hal.js?v=2'
-import BROKER from './util/EventBroker.js?v=2'
+import hal from './util/hal.js?v=3'
+import BROKER from './util/EventBroker.js?v=3'
 import {
 	handleDragStart,
 	handleDragOver,
@@ -7,7 +7,7 @@ import {
 	handleDragLeave,
 	handleDrop,
 	handleDragEnd,
-} from './util/dragndrop.js?v=2'
+} from './util/dragndrop.js?v=3'
 
 
 
