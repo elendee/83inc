@@ -489,11 +489,13 @@ const action = event => {
 			break;
 
 			case 'up':
+				if( !obj ) return hal('error', 'no obj selected', 2000 )
 				obj.bringForward()
 				debounced_print_index()
 				break;
 
 			case 'down':
+				if( !obj ) return hal('error', 'no obj selected', 2000 )
 				obj.sendBackwards()
 				debounced_print_index()
 				break;
