@@ -169,6 +169,10 @@ const init_width = window.innerWidth - 400
 setTimeout(() => {
 	fCanvas.wrapperEl.style['max-width'] = init_width + 'px'
 	fCanvas.wrapperEl.style['height'] = init_width + 'px'
+
+	const obj = fCanvas._objects?.[0]
+	if( obj ) fCanvas.setActiveObject( obj ).requestRenderAll()
+
 }, 500)
 
 
