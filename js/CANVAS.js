@@ -1,3 +1,4 @@
+import hal from './util/hal.js?v=2'
 import BROKER from './util/EventBroker.js?v=2'
 import {
 	handleDragStart,
@@ -10,6 +11,21 @@ import {
 
 
 
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------
+// lib
+// ------------------------------------------------------------------------
+
+// canvas resizing
 
 let lastX
 let bounds
@@ -34,7 +50,42 @@ const remove_resize = e => {
 }
 
 
+// canvas binding listeners
+const object_added = e => {
+
+	BROKER.publish('GUI_UPDATE', { canvas: fCanvas })
+}
+const object_modified = e => {
+	console.log('obj modified')
+}
+const selection_created = e => {
+	BROKER.publish('GUI_UPDATE', { canvas: fCanvas })
+}
+const selection_cleared = e => {
+	BROKER.publish('GUI_UPDATE', { canvas: fCanvas })
+}
+// const double_click = e => {
+
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------
 // init canvas
+// ------------------------------------------------------------------------
 
 const fCanvas = window.fCanvas = new fabric.Canvas( document.getElementById('canvas'), {
 	width: 1080,
@@ -70,26 +121,60 @@ fCanvas.upperCanvasEl.addEventListener('drop', function(){ handleDrop( event ) }
 
 
 // dummy data for canvas
+const add_dummy_data = () => {
+	const rect = new fabric.Rect({
+		width: window.innerWidth / 2,
+		height: window.innerWidth / 2,
+		top: 10,
+		left: 10,
+		fill: 'pink',
+	})
+	rect.rotate(20)
 
-const rect = new fabric.Rect({
-	width: window.innerWidth / 2,
-	height: window.innerWidth / 2,
-	top: 10,
-	left: 10,
-	fill: 'pink',
-})
-rect.rotate(20)
+	fCanvas.add( rect )
+	fCanvas.requestRenderAll()
+}
 
-fCanvas.add( rect )
-fCanvas.requestRenderAll()
-
-
-
-
-
+add_dummy_data()
 
 
+// bind events
+fCanvas.on('object:added', object_added )
+fCanvas.on('object:modified', object_modified )
+fCanvas.on('selection:created', selection_created )
+fCanvas.on('selection:updated', selection_created )
+fCanvas.on('selection:cleared', selection_cleared )
+// fCanvas.on('mouse:dblclick', double_click )// for text editing..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------
 // subscribers
+// ------------------------------------------------------------------------
+
 const add_object = event => {
 	const { type, object, top, left } = event
 
@@ -154,13 +239,51 @@ const add_image = event => {
 
 }
 
+const action = event => {
 
+	const { type } = event
+
+	switch( type ){
+
+		case 'copy':
+			hal('standard', 'action ' + type + ' in development', 3000 )
+			break;
+
+		case 'delete':
+			hal('standard', 'action ' + type + ' in development', 3000 )
+			break;
+
+		case 'fill':
+			hal('standard', 'action ' + type + ' in development', 3000 )
+			break;
+
+		case 'data':
+			const obj = fCanvas.getActiveObject()
+			if( !obj ) return hal('standard', 'no object selected', 3000 ) // should be impossible
+			console.log( obj )
+			// x, y, scale, position, alignment and keyboard nudging
+			const fields = ['width', 'height', 'top', 'left', 'scaleX', 'scaleY', 'angle']
+			const packet = {}
+			for( const field of fields ){
+				packet[ field ] = obj[ field ]
+			}
+			hal('standard', 'aCoords: <br><pre>' + JSON.stringify( obj.aCoords, false, 2 ) + '</pre>', 30 * 1000 )
+			hal('standard', 'data: <br><pre>' + JSON.stringify( packet, false, 2 ) + '</pre>', 30 * 1000 )
+			break;
+
+		default: 
+			return console.log('unknown gui action', type )
+	}
+
+}
 
 
 
 BROKER.subscribe('CANVAS_ADD_OBJECT', add_object )
 BROKER.subscribe('CANVAS_RENDER', render_all )
 BROKER.subscribe('ADD_IMAGE', add_image )
+BROKER.subscribe('GUI_ACTION', action )
+
 
 
 export default {}

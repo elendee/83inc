@@ -22,7 +22,7 @@ const library_data = [
 const SECTIONS = {}
 
 
-class Section {
+class GUI_Section {
 
 	constructor( init ){
 		init = init || {}
@@ -61,8 +61,65 @@ class Section {
 
 	}
 
+}
+
+
+class ActionBar {
+
+	constructor( init ){
+
+		this.wrapper = document.getElementById('action-bar')
+
+		this.actions = { // true === show for all
+			copy: {
+				allowed: true,
+			},
+			delete: {
+				allowed: true,
+			},
+			fill: {
+				allowed: ['rect', 'circle', 'path', 'text'],
+			},
+			data: {
+				allowed: true,
+			}
+		}
+
+		let action
+		for( const type in this.actions ){
+			// build DOM element / button
+			action = this.actions[ type ]
+			action.ele = document.createElement('div')
+			action.ele.setAttribute('data-type', type )
+			action.ele.innerText = type
+			action.ele.classList.add('button')
+			this.wrapper.append( action.ele )
+			// assign action (publish event to CANVAS)
+			action.action = () => {
+				BROKER.publish('GUI_ACTION', {
+					type: type,
+				})
+			}
+			action.ele.addEventListener('click', action.action )
+		}
+
+	}
+
+
+	show(){
+		this.wrapper.style.display = 'inline-block'
+	}
+	
+	hide(){
+		this.wrapper.style.display = 'none'
+	}
 
 }
+
+const AB = new ActionBar()
+
+
+
 
 
 
@@ -108,7 +165,7 @@ const build_button = type => {
 
 // init
 for( const type of section_types ){
-	const btn = new Section({
+	const btn = new GUI_Section({
 		type: type,
 	})
 	nav.append( btn.tab )
@@ -116,6 +173,37 @@ for( const type of section_types ){
 }
 
 nav.querySelector('.button').click()
+
+
+
+
+
+// event subscribers
+const update_gui = event => {
+	const { canvas } = event
+	const active = canvas.getActiveObject()
+	if( active ){
+		AB.show()
+	}else{
+		AB.hide()
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+BROKER.subscribe('GUI_UPDATE', update_gui )
+
+
+
 
 
 export default {}

@@ -42,10 +42,13 @@ canvas{
 
 .button{
 	display: inline-block;
-	padding: 5px;
+	padding: 8px 12px;
+	letter-spacing: 1px;
 	background: lightgrey;
 	cursor: pointer;
 	user-select: none;
+	text-transform: uppercase;
+	font-family: monospace;
 	box-shadow: 0px 0px 10px black;
 }
 .button:hover{
@@ -89,4 +92,25 @@ canvas{
 
 .img_dragging{
 	transform: rotate(-10deg);
+}
+
+#action-bar{
+/* 	border: 3px solid red; */
+	position: fixed;
+	z-index: 99;
+	left: 150px;
+	top: 10px;
+/* 	background: rgba() */
+/* 	min-width: 50px; */
+/* 	min-height: 50px; */
+}
+
+#action-bar .button{
+	margin: 0 10px;
+	border-radius: 2px;
+}
+
+
+.alert-msg pre{
+	text-align: left;
 }
