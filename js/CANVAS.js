@@ -460,8 +460,7 @@ const action = event => {
 					obj.top -= bounds.top
 					break;
 				case 2:
-					left = cwidth - bounds.width
-					lib.setBoundingBox( obj, 'left', left )
+					lib.setBoundingBox( obj, 'left', cwidth - bounds.width )
 					obj.top -= bounds.top
 					break;
 				case 3: // ml
