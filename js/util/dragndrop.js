@@ -1,4 +1,4 @@
-import BROKER from './EventBroker.js?v=3'
+import BROKER from './EventBroker.js?v=4'
 // import CANVAS from './CANVAS.js'
 // 
 // import USER from '../USER.js'

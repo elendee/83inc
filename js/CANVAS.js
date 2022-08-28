@@ -1,5 +1,6 @@
-import hal from './util/hal.js?v=3'
-import BROKER from './util/EventBroker.js?v=3'
+import hal from './util/hal.js?v=4'
+import * as lib from './util/lib.js?v=4'
+import BROKER from './util/EventBroker.js?v=4'
 import {
 	handleDragStart,
 	handleDragOver,
@@ -7,7 +8,7 @@ import {
 	handleDragLeave,
 	handleDrop,
 	handleDragEnd,
-} from './util/dragndrop.js?v=3'
+} from './util/dragndrop.js?v=4'
 
 
 
@@ -24,6 +25,31 @@ import {
 // ------------------------------------------------------------------------
 // lib
 // ------------------------------------------------------------------------
+
+// key moves
+const key_directions = {
+	38: [0, -1],
+	39: [1, 0],
+	40: [0, 1],
+	37: [-1, 0],
+}
+const move_obj = ( keycode, shift, event ) => {
+	const obj = fCanvas.getActiveObject()
+	if( !obj ) return console.log('no obj found to move')
+	// console.log('args?', keycode, shift )
+	event.preventDefault()
+
+	const set = key_directions[ keycode ]
+	let horiz = set[0]
+	if( shift ) horiz *= 8
+	let vert = set[1]
+	if( shift ) vert *= 8
+	obj.left += horiz
+	obj.top += vert
+	fCanvas.requestRenderAll()
+}
+const debounced_move = lib.make_debounce( move_obj, 200, true, false )
+
 
 // canvas resizing
 
@@ -50,6 +76,7 @@ const remove_resize = e => {
 }
 
 
+
 // canvas binding listeners
 const object_added = e => {
 
@@ -68,8 +95,34 @@ const selection_cleared = e => {
 
 // }
 
+// copy paste
+function specialcopy(){
 
+	fCanvas.getActiveObject().clone(function(cpy){ 
+		
+		cpy.set({
+			left: cpy.left + 20,
+			top: cpy.top + 20
+		})
 
+		if (cpy.type === 'activeSelection') {
+			cpy.canvas = fCanvas
+
+			cpy.forEachObject(function(obj) {
+				fCanvas.add(obj)
+			})
+			cpy.setCoords()
+		} else {
+			fCanvas.add(cpy)
+		}
+
+		fCanvas.discardActiveObject()
+			.setActiveObject(cpy)
+			.requestRenderAll()
+
+	})
+		
+}
 
 
 
@@ -120,13 +173,89 @@ fCanvas.upperCanvasEl.addEventListener('dragleave', handleDragLeave )
 fCanvas.upperCanvasEl.addEventListener('drop', function(){ handleDrop( event ) } )
 
 
+
+
+// keybinds
+const key_up = e => {
+	if( 1) console.log( e.keyCode )
+	if( e.shiftKey ){
+
+		switch( e.keyCode ){
+			default:return
+		}
+
+	}else if( e.ctrlKey ){
+
+		switch( e.keyCode ){
+			default:return
+		}
+
+	}
+
+	switch( e.keyCode ){
+		case 27:
+			fCanvas.discardActiveObject().requestRenderAll()
+			break;
+		case 13: // enter
+			break;
+		case 8:
+			const obj = fCanvas.getActiveObject()
+			if( !obj ) return console.log('no obj to delete')
+			BROKER.publish('GUI_ACTION', {
+				type: 'delete'
+			})
+			break;
+		default:return
+	}
+}
+const key_down = e => {
+
+	if( e.shiftKey ){
+
+		switch( e.keyCode ){
+			case 38: // u
+			case 39: // r
+			case 40: // d 
+			case 37: // l
+				move_obj( e.keyCode, true, e )
+				e.preventDefault()
+				break;
+			default:return
+		}
+
+	}else if( e.ctrlKey ){
+
+		switch( e.keyCode ){
+			case 3:
+				break;
+			default:return
+		}
+
+	}
+
+	switch( e.keyCode ){
+		case 38: // u
+		case 39: // r
+		case 40: // d 
+		case 37: // l
+			move_obj( e.keyCode, false, e )
+			e.preventDefault()
+		default:return
+	}
+}
+
+window.addEventListener('keyup', key_up )
+window.addEventListener('keydown', key_down )
+
+
+
 // dummy data for canvas
 const add_dummy_data = () => {
 	const rect = new fabric.Rect({
-		width: window.innerWidth / 2,
-		height: window.innerWidth / 2,
-		top: 10,
-		left: 10,
+		width: window.innerWidth / 4,
+		height: window.innerWidth / 4,
+		top: window.innerWidth / 4,
+		left: window.innerHeight / 4,
 		fill: 'pink',
 	})
 	rect.rotate(20)
@@ -183,6 +312,7 @@ const add_object = event => {
 			fCanvas.add( object )
 			if( top ) object.set('top', top )
 			if( left ) object.set('left', left )
+			object.setCoords()
 			fCanvas.requestRenderAll()
 			break;
 		default:
@@ -229,6 +359,9 @@ const add_image = event => {
 		console.log('adding', fimg )
 
 		fCanvas.add( fimg )
+
+		fimg.setCoords()
+
 		fCanvas.requestRenderAll()
 
 	}
@@ -241,16 +374,31 @@ const add_image = event => {
 
 const action = event => {
 
-	const { type } = event
+	const { type, e, index } = event
+
+	const obj = fCanvas.getActiveObject()
 
 	switch( type ){
 
 		case 'copy':
 			hal('standard', 'action ' + type + ' in development', 3000 )
+			if( !obj ) return console.log('no obj to copy')
+			// if( obj.type.match(/active/i)){
+				// return hal('error', 'group copies not currently supported', 5000 )
+			// }
+			specialcopy()
 			break;
 
 		case 'delete':
-			hal('standard', 'action ' + type + ' in development', 3000 )
+			if( !obj ) return console.log('no obj to delete')
+			if( obj.type.match(/active/i)){
+				for( const o of obj._objects ){
+					fCanvas.remove( o) 
+				}
+			}
+			fCanvas.remove( obj )
+			fCanvas.discardActiveObject()
+			fCanvas.requestRenderAll()
 			break;
 
 		case 'fill':
@@ -258,7 +406,6 @@ const action = event => {
 			break;
 
 		case 'data':
-			const obj = fCanvas.getActiveObject()
 			if( !obj ) return hal('standard', 'no object selected', 3000 ) // should be impossible
 			console.log( obj )
 			// x, y, scale, position, alignment and keyboard nudging
@@ -267,8 +414,84 @@ const action = event => {
 			for( const field of fields ){
 				packet[ field ] = obj[ field ]
 			}
-			hal('standard', 'aCoords: <br><pre>' + JSON.stringify( obj.aCoords, false, 2 ) + '</pre>', 30 * 1000 )
+			hal('standard', 'aCoords (the 4 corners): <br><pre>' + JSON.stringify( obj.aCoords, false, 2 ) + '</pre>', 30 * 1000 )
 			hal('standard', 'data: <br><pre>' + JSON.stringify( packet, false, 2 ) + '</pre>', 30 * 1000 )
+			break;
+
+		case 'snap':
+			console.log( e.target, index )
+			if( !obj ) return hal('error', 'no object to snap', 3000 )
+
+			// could split this into several types of snap
+			// - by bounding rect
+			// - by object corner positions
+			// - by object center
+
+			// bounding rect for now...
+
+			const bounds = obj.getBoundingRect()
+
+			// the difference from "obj left" to "bounding box left"
+			// add this to obj position to move by bounding box
+			// const diff = { 
+			// 	left: bounds.left - obj.left,
+			// 	top: bounds.top - obj.top,
+			// }
+
+			const cwidth = fCanvas.getWidth()
+			const cheight = fCanvas.getHeight()
+
+			// console.log( diff )
+			// let left, top
+
+			const mid = {
+				x: lib.middle( cwidth, bounds.width ),
+				y: lib.middle( cheight, bounds.height )
+			}
+
+			switch( index ){
+
+				case 0: // tl
+					obj.left -= bounds.left
+					obj.top -= bounds.top
+					break;
+				case 1:
+					lib.setBoundingBox( obj, 'left', mid.x )
+					obj.top -= bounds.top
+					break;
+				case 2:
+					left = cwidth - bounds.width
+					lib.setBoundingBox( obj, 'left', left )
+					obj.top -= bounds.top
+					break;
+				case 3: // ml
+					obj.left -= bounds.left
+					lib.setBoundingBox( obj, 'top', mid.y )
+					break;
+				case 4:
+					lib.setBoundingBox( obj, 'left', mid.x )
+					lib.setBoundingBox( obj, 'top', mid.y )
+					break;
+				case 5:
+					lib.setBoundingBox(obj, 'top', mid.y )
+					lib.setBoundingBox( obj, 'left', cwidth - bounds.width )
+					break;
+				case 6:
+					obj.left -= bounds.left
+					lib.setBoundingBox( obj, 'top', cheight - bounds.height )
+					break;
+				case 7:
+					lib.setBoundingBox( obj, 'left', mid.x )
+					lib.setBoundingBox( obj, 'top', cheight - bounds.height )
+					break;
+				case 8:
+					lib.setBoundingBox( obj, 'left', cwidth - bounds.width )
+					lib.setBoundingBox( obj, 'top', cheight - bounds.height )
+					break;
+
+			}
+
+			fCanvas.requestRenderAll()
 			break;
 
 		default: 
@@ -276,6 +499,7 @@ const action = event => {
 	}
 
 }
+
 
 
 

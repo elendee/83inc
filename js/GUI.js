@@ -1,5 +1,5 @@
-import hal from './util/hal.js?v=3'
-import BROKER from './util/EventBroker.js?v=3'
+import hal from './util/hal.js?v=4'
+import BROKER from './util/EventBroker.js?v=4'
 
 
 
@@ -77,30 +77,62 @@ class ActionBar {
 			delete: {
 				allowed: true,
 			},
-			fill: {
-				allowed: ['rect', 'circle', 'path', 'text'],
-			},
+			// fill: {
+			// 	allowed: ['rect', 'circle', 'path', 'text'],
+			// },
 			data: {
+				allowed: true,
+			},
+			snaps: {
 				allowed: true,
 			}
 		}
 
 		let action
 		for( const type in this.actions ){
-			// build DOM element / button
+
 			action = this.actions[ type ]
 			action.ele = document.createElement('div')
 			action.ele.setAttribute('data-type', type )
-			action.ele.innerText = type
-			action.ele.classList.add('button')
-			this.wrapper.append( action.ele )
-			// assign action (publish event to CANVAS)
-			action.action = () => {
-				BROKER.publish('GUI_ACTION', {
-					type: type,
-				})
+
+			if( type ==='snaps'){ // special case - build 9 grid buttons
+
+				action.ele.classList.add('grid-container')
+				for( let x = 0; x < 3; x++ ){
+					const row = document.createElement('div')
+					row.classList.add('grid-row')
+					for( let y = 0; y < 3; y++ ){
+						const cell = document.createElement('div')
+						cell.classList.add('grid-cell')
+						const index = (x * 3 ) + y
+						// cell.innerText = index
+						cell.addEventListener('click', e => {
+							BROKER.publish('GUI_ACTION', {
+								type: 'snap',
+								e: e,
+								index: index,
+							})
+						})
+						row.append( cell )
+					}
+					action.ele.append( row )
+				}
+
+			}else{ // normal buttons
+
+				// build DOM element / button
+				action.ele.innerText = type
+				action.ele.classList.add('button')
+				// assign action (publish event to CANVAS)
+				action.action = () => {
+					BROKER.publish('GUI_ACTION', {
+						type: type,
+					})
+				}
+				action.ele.addEventListener('click', action.action )
+
 			}
-			action.ele.addEventListener('click', action.action )
+			this.wrapper.append( action.ele )
 		}
 
 	}
