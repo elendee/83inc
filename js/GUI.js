@@ -50,13 +50,10 @@ class GUI_Section {
 				const reader = new FileReader()
 				reader.readAsDataURL( file )
 				reader.onload = e => {
-					// console.log('reader done', e.target.result )
-					// const img = document.createElement('img')
-					// img.classList.add('drop')
-					// img.src = e.target.result
 					const drop = build_drop_img()
 					drop.querySelector('img').src = e.target.result
 					SECTIONS.library.ele.append( drop )
+					hal('success','img uploaded', 3000 )
 				}
 				reader.onerror =e => {
 					console.log( e )
