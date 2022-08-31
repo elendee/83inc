@@ -1,5 +1,5 @@
-import hal from './util/hal.js?v=5'
-import BROKER from './util/EventBroker.js?v=5'
+import hal from './util/hal.js?v=6'
+import BROKER from './util/EventBroker.js?v=6'
 
 
 
@@ -43,6 +43,7 @@ class GUI_Section {
 			this.uploader = document.createElement('input')
 			this.uploader.type = 'file'
 			this.uploader.id = 'hidden-uploader'
+			this.uploader.classList.add('hidden')
 			this.uploader.addEventListener('change', e => {
 
 				const file = this.uploader.files[0]

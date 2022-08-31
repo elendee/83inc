@@ -151,7 +151,16 @@ canvas{
 	margin: 0 10px;
 	border-radius: 2px;
 }
-
+#action-bar .button[data-type='copy']{
+	background: lightgreen;
+}
+#action-bar .button[data-type='delete']{
+	background: #e85858;
+}
+#action-bar .button[data-type='up'],
+#action-bar .button[data-type='down']{
+	background: #e9c075;
+}
 
 .alert-msg pre{
 	text-align: left;

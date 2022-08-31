@@ -1,6 +1,6 @@
-import hal from './util/hal.js?v=5'
-import * as lib from './util/lib.js?v=5'
-import BROKER from './util/EventBroker.js?v=5'
+import hal from './util/hal.js?v=6'
+import * as lib from './util/lib.js?v=6'
+import BROKER from './util/EventBroker.js?v=6'
 import {
 	handleDragStart,
 	handleDragOver,
@@ -8,7 +8,7 @@ import {
 	handleDragLeave,
 	handleDrop,
 	handleDragEnd,
-} from './util/dragndrop.js?v=5'
+} from './util/dragndrop.js?v=6'
 
 
 
@@ -134,6 +134,34 @@ const print_index = () => {
 
 const debounced_print_index = lib.make_debounce( print_index, 500, false, true )
 
+const step_rotate_obj = ( dir, key ) => {
+	if( !dir ){
+		if( key === 37 ) dir = 'ccw'
+		if( key === 39 ) dir = 'cw'
+	}
+	if( dir !== 'cw' && dir !== 'ccw') return console.log('invalid rotate', dir, key )
+
+		console.log('r?')
+
+	const obj = fCanvas.getActiveObject()
+	let step = 15 
+	if( dir === 'ccw') step *= -1
+	obj.rotate( step + obj.angle )
+	fCanvas.requestRenderAll()
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -190,11 +218,29 @@ fCanvas.upperCanvasEl.addEventListener('drop', function(){ handleDrop( event ) }
 
 // keybinds
 const key_up = e => {
-	if( 1) console.log( e.keyCode )
+	if( 0 ) console.log( e.keyCode )
 	if( e.shiftKey ){
 
-		switch( e.keyCode ){
-			default:return
+		if( e.altKey ){
+
+			switch( e.keyCode ){
+
+				case 37: // l
+				case 39: // r
+					step_rotate_obj( false, e.keyCode )
+					e.preventDefault()
+					break;
+
+				default:
+					break;
+			}
+
+		}else{
+
+			switch( e.keyCode ){
+				default:return
+
+			}
 		}
 
 	}else if( e.ctrlKey ){
@@ -221,19 +267,26 @@ const key_up = e => {
 		default:return
 	}
 }
+
 const key_down = e => {
 
 	if( e.shiftKey ){
 
-		switch( e.keyCode ){
-			case 38: // u
-			case 39: // r
-			case 40: // d 
-			case 37: // l
-				move_obj( e.keyCode, true, e )
-				e.preventDefault()
-				break;
-			default:return
+		if( e.altKey ){
+
+		}else{
+
+			switch( e.keyCode ){
+				case 38: // u
+				case 39: // r
+				case 40: // d 
+				case 37: // l
+					move_obj( e.keyCode, true, e )
+					e.preventDefault()
+					break;
+				default:return
+			}
+
 		}
 
 	}else if( e.ctrlKey ){
