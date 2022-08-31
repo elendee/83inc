@@ -26,7 +26,7 @@ const section_types = [
 ]
 
 const library_data = [
-
+	'chocotaco.png',
 ]
 
 const SECTIONS = {}
