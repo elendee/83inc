@@ -1,6 +1,6 @@
-import hal from './util/hal.js?v=6'
-import BROKER from './util/EventBroker.js?v=6'
-import STATE from './STATE.js?v=6'
+import hal from './util/hal.js?v=7'
+import BROKER from './util/EventBroker.js?v=7'
+import STATE from './STATE.js?v=7'
 
 
 
