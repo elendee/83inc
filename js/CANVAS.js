@@ -9,6 +9,7 @@ import {
 	handleDrop,
 	handleDragEnd,
 } from './util/dragndrop.js?v=6'
+import STATE from './STATE.js?v=6'
 
 
 
@@ -193,7 +194,6 @@ fCanvas.wrapperEl.append( resizer )
 
 // init size
 const init_width = window.innerWidth - 400
-// ( if square )
 setTimeout(() => {
 	fCanvas.wrapperEl.style['max-width'] = init_width + 'px'
 	fCanvas.wrapperEl.style['height'] = init_width + 'px'
@@ -273,6 +273,8 @@ const key_down = e => {
 	if( e.shiftKey ){
 
 		if( e.altKey ){
+
+			return
 
 		}else{
 

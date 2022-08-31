@@ -1,5 +1,6 @@
 import hal from './util/hal.js?v=6'
 import BROKER from './util/EventBroker.js?v=6'
+import STATE from './STATE.js?v=6'
 
 
 
@@ -23,6 +24,7 @@ const section_types = [
 	'upload',
 	'save',
 	'export',
+	'keybinds',
 ]
 
 const library_data = [
@@ -107,6 +109,12 @@ class GUI_Section {
 
 			case 'save':
 				this.ele.innerText = '(save section)'
+				break;
+
+			case 'keybinds':
+				for( const key in STATE.keybinds ){
+					this.ele.append( build_key( key, STATE.keybinds[ key ] ) )
+				}
 				break;
 
 			case 'export':
@@ -223,6 +231,16 @@ const AB = new ActionBar()
 
 
 
+
+
+
+
+
+
+
+
+
+
 // ------------------------------------------------------------------------------------
 // lib
 // ------------------------------------------------------------------------------------
@@ -260,6 +278,22 @@ const build_button = type => {
 	return wrapper
 }
 
+const build_key = ( name, value ) => {
+	const wrapper = document.createElement('div')
+	wrapper.classList.add('keybind')
+	const prefix = STATE.prefixes[ name ] ? STATE.prefixes[ name ] + ' + ' : ''
+	wrapper.innerHTML = `<span>${ name.replace(/_/g,' ') }</span>: ${ prefix + STATE.keycodes[ value ] }`
+	return wrapper
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -285,6 +319,11 @@ toggle.addEventListener('click', () => {
 	toggle.classList.toggle('toggled')
 	gui.classList.toggle('toggled')
 })
+
+
+
+
+
 
 
 
