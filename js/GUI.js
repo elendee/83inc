@@ -42,31 +42,7 @@ class GUI_Section {
 		this.type = init.type || '(missing type)'
 		this.tab = build_button( this.type )
 
-		if( this.type === 'upload' ){
-			this.uploader = document.createElement('input')
-			this.uploader.type = 'file'
-			this.uploader.id = 'hidden-uploader'
-			this.uploader.classList.add('hidden')
-			this.uploader.addEventListener('change', e => {
-
-				const file = this.uploader.files[0]
-
-				const reader = new FileReader()
-				reader.readAsDataURL( file )
-				reader.onload = e => {
-					const drop = build_drop_img()
-					drop.querySelector('img').src = e.target.result
-					SECTIONS.library.ele.append( drop )
-					hal('success','img uploaded', 3000 )
-				}
-				reader.onerror =e => {
-					console.log( e )
-					hal('error', 'img load error', 5000 )
-				}
-				hal('standard', 'file chose... (in dev)', 3000 )
-			})
-			document.body.append( this.uploader )
-		}
+		this.init_custom_behavior( this.type )
 
 		this.tab.addEventListener('click', e => {
 
@@ -130,6 +106,51 @@ class GUI_Section {
 			default: 
 				console.log('unhandled init ele', type )
 				break;
+		}
+
+	}
+
+	init_custom_behavior( type ){
+
+		switch( type ){
+
+			case 'upload':
+			
+				this.uploader = document.createElement('input')
+				this.uploader.type = 'file'
+				this.uploader.id = 'hidden-uploader'
+				this.uploader.classList.add('hidden')
+				this.uploader.addEventListener('change', e => {
+
+					const file = this.uploader.files[0]
+
+					const reader = new FileReader()
+					reader.readAsDataURL( file )
+					reader.onload = e => {
+						const drop = build_drop_img()
+						drop.querySelector('img').src = e.target.result
+						SECTIONS.library.ele.append( drop )
+						hal('success','img uploaded', 3000 )
+					}
+					reader.onerror =e => {
+						console.log( e )
+						hal('error', 'img load error', 5000 )
+					}
+					hal('standard', 'file chose... (in dev)', 3000 )
+				})
+				document.body.append( this.uploader )
+
+			case 'save':
+			case 'export':
+				this.tab.addEventListener('click',() => {
+					hal('standard', '(' + type + ' in dev)', 5000 )
+				})
+				break;
+
+			default:
+				console.log('no custom behavior for ' + type )
+				break;
+
 		}
 
 	}
@@ -288,7 +309,7 @@ const build_key = ( name, value ) => {
 	const wrapper = document.createElement('div')
 	wrapper.classList.add('keybind')
 	const prefix = STATE.prefixes[ name ] ? STATE.prefixes[ name ] + ' + ' : ''
-	wrapper.innerHTML = `<span>${ name.replace(/_/g,' ') }</span>: ${ prefix + STATE.keycodes[ value ] }`
+	wrapper.innerHTML = `<b>${ name.replace(/_/g,' ') }</b>: ${ prefix + STATE.keycodes[ value ] }`
 	return wrapper
 }
 
@@ -324,8 +345,11 @@ nav.querySelector('.button').click()
 toggle.addEventListener('click', () => {
 	toggle.classList.toggle('toggled')
 	gui.classList.toggle('toggled')
+	STATE.set('menu_toggled', gui.classList.contains('toggled') ? true : false )
 })
 
+// init state
+if( STATE.data.menu_toggled ) toggle.click()
 
 
 

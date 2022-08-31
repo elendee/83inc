@@ -108,7 +108,9 @@ class State {
 
 	constructor(){
 		this.storage = ''
-		this.data = {}
+		this.data = {
+			menu_toggled: false,
+		}
 
 		// keybinds (both control + help GUI):
 		this.keybinds = {
@@ -123,6 +125,14 @@ class State {
 			rotate_right: 'Alt + Shift',
 		}
 		this.keycodes = keycodes
+
+		this.load() // fill this.data
+
+	}
+
+	set( prop, value ){
+		this.data[ prop ] = value
+		this.save()
 	}
 
 	save(){

@@ -99,6 +99,7 @@ canvas{
 	max-height: calc(100vh - 100px);
 	background: rgba(0, 0, 0, .1);
 	box-shadow: inset 0px 0px 5px 
+	padding: 5px;
 }
 .hidden{
 	display: none;

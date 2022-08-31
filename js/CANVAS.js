@@ -214,8 +214,6 @@ fCanvas.upperCanvasEl.addEventListener('dragleave', handleDragLeave )
 fCanvas.upperCanvasEl.addEventListener('drop', function(){ handleDrop( event ) } )
 
 
-
-
 // keybinds
 const key_up = e => {
 	if( 0 ) console.log( e.keyCode )
@@ -342,8 +340,6 @@ fCanvas.on('selection:created', selection_created )
 fCanvas.on('selection:updated', selection_created )
 fCanvas.on('selection:cleared', selection_cleared )
 // fCanvas.on('mouse:dblclick', double_click )// for text editing..
-
-
 
 
 
