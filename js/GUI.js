@@ -1,5 +1,5 @@
-import hal from './util/hal.js?v=4'
-import BROKER from './util/EventBroker.js?v=4'
+import hal from './util/hal.js?v=5'
+import BROKER from './util/EventBroker.js?v=5'
 
 
 
@@ -26,35 +26,7 @@ const section_types = [
 ]
 
 const library_data = [
-	'df.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
-	'chocotaco.png',
+
 ]
 
 const SECTIONS = {}
@@ -66,13 +38,51 @@ class GUI_Section {
 		init = init || {}
 		this.type = init.type || '(missing type)'
 		this.tab = build_button( this.type )
+
+		if( this.type === 'upload' ){
+			this.uploader = document.createElement('input')
+			this.uploader.type = 'file'
+			this.uploader.id = 'hidden-uploader'
+			this.uploader.addEventListener('change', e => {
+
+				const file = this.uploader.files[0]
+
+				const reader = new FileReader()
+				reader.readAsDataURL( file )
+				reader.onload = e => {
+					// console.log('reader done', e.target.result )
+					// const img = document.createElement('img')
+					// img.classList.add('drop')
+					// img.src = e.target.result
+					const drop = build_drop_img()
+					drop.querySelector('img').src = e.target.result
+					SECTIONS.library.ele.append( drop )
+				}
+				reader.onerror =e => {
+					console.log( e )
+					hal('error', 'img load error', 5000 )
+				}
+				hal('standard', 'file chose... (in dev)', 3000 )
+			})
+			document.body.append( this.uploader )
+		}
+
 		this.tab.addEventListener('click', e => {
-			for( const type in SECTIONS ){
-				SECTIONS[ type ].ele.classList.add('hidden')
-				SECTIONS[ type ].tab.classList.remove('selected')
+
+			if( this.type === 'upload'){
+
+				this.uploader.click()
+
+			}else{ // just sectional tabs; no actions
+				for( const type in SECTIONS ){
+					SECTIONS[ type ].ele.classList.add('hidden')
+					SECTIONS[ type ].tab.classList.remove('selected')
+				}
+				this.ele.classList.remove('hidden')
+				this.tab.classList.add('selected')
 			}
-			this.ele.classList.remove('hidden')
-			this.tab.classList.add('selected')
+
+
 		})
 		this.ele = document.createElement('div')
 		this.ele.classList.add('section', 'hidden')
@@ -93,7 +103,20 @@ class GUI_Section {
 				}
 				break;
 
+			case 'upload':
+				this.ele.append( 'upload...')
+				break;
+
+			case 'save':
+				this.ele.innerText = '(save section)'
+				break;
+
+			case 'export':
+				this.ele.innerText = '(export section)'
+				break;
+
 			default: 
+				console.log('unhandled init ele', type )
 				break;
 		}
 
@@ -225,7 +248,9 @@ const build_drop_img = url => {
 	const drop = document.createElement('div')
 	drop.classList.add('drop')
 	const img = document.createElement('img')
-	img.src = './library/' + url
+	if( url ){
+		img.src = './library/' + url
+	}
 	drop.addEventListener('click', add_image )
 	drop.append( img )
 	return drop
