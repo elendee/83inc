@@ -25,6 +25,7 @@ const section_types = [
 	'save',
 	'export',
 	'keybinds',
+	'settings',
 ]
 
 const library_data = [
@@ -115,6 +116,11 @@ class GUI_Section {
 				for( const key in STATE.keybinds ){
 					this.ele.append( build_key( key, STATE.keybinds[ key ] ) )
 				}
+				break;
+
+			case 'settings':
+				// const 
+				this.ele.innerText = '(settings section)'
 				break;
 
 			case 'export':
